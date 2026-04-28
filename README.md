@@ -1,17 +1,14 @@
-# flutter_project
+# Flutter Development Internship - Week 1
 
-A new Flutter project.
+This project is part of my Flutter development journey. This week, I focused on setting up the environment and building a functional Login UI.
 
-## Getting Started
+## 🚀 Tasks Completed
+* **Environment Setup:** Installed Flutter and configured Android Studio.
+* **Basic UI:** Created a Login Screen using `Column`, `TextFormField`, and `ElevatedButton`.
+* **Form Validation:** Added logic to check for valid email formats and password length.
+* **Navigation:** Implemented `Navigator.push` to move from Login to a Home Screen.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ How to Run
+1. Clone this repo.
+2. Run `flutter pub get` in the terminal.
+3. Run `flutter run`.
