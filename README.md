@@ -12,3 +12,5 @@ This project is part of my Flutter development journey. This week, I focused on 
 1. Clone this repo.
 2. Run `flutter pub get` in the terminal.
 3. Run `flutter run`.
+4. ## Project Demo Video
+Check out the app in action: [App Demo Video](videogit add README.md.mp4)
