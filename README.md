@@ -1,16 +1,27 @@
-# Flutter Development Internship - Week 1
+# Multi-Feature Task Manager & API Consumer (Cycle 2)
 
-This project is part of my Flutter development journey. This week, I focused on setting up the environment and building a functional Login UI.
+An advanced, production-ready Flutter application built for Cycle 2 of the Developers Internship. This project integrates asynchronous RESTful API architectures, Firebase cloud authentication, live Firestore database syncing, and global state management frameworks.
 
-## 🚀 Tasks Completed
-* **Environment Setup:** Installed Flutter and configured Android Studio.
-* **Basic UI:** Created a Login Screen using `Column`, `TextFormField`, and `ElevatedButton`.
-* **Form Validation:** Added logic to check for valid email formats and password length.
-* **Navigation:** Implemented `Navigator.push` to move from Login to a Home Screen.
+## 🚀 Core Features Included
 
-## 🛠️ How to Run
-1. Clone this repo.
-2. Run `flutter pub get` in the terminal.
-3. Run `flutter run`.
-4. ## Project Demo Video
-Check out the app in action: [App Demo Video](videogit add README.md.mp4)
+### 📡 Week 4: Networking & JSON Data Parsing
+- Fetches live mockup profile information asynchronously using the `http` package from JSONPlaceholder API endpoints.
+- Implemented a robust UI error handling wrapper with custom interactive network connection retry states.
+
+### 🔐 Week 5: Cloud Firebase Backend Integration
+- **Authentication:** Secure user account registration and login validation workflows driven via the Firebase Auth SDK.
+- **Cloud Database:** Real-time data persistence mapping user registration parameters into Cloud Firestore instances.
+
+### 🏗️ Week 6: Centralized State Management (Provider)
+- Refactored the core application layer away from local `setState` scopes to a global state dispatching model via the `Provider` engine.
+- Added smooth interactive user experience enhancements using `Dismissible` item-swiping animations.
+
+### 🏆 Bonus Challenges Completed
+- **Push Notifications:** Integrated the Firebase Cloud Messaging (FCM) background network tracking framework.
+- **Advanced State Management:** Explored and added an asynchronous global theme switching component using `Flutter_Riverpod` alongside Provider.
+
+## 🛠️ Local Configuration Guide
+
+1. Clone the project ecosystem repository:
+   ```bash
+   git clone [https://github.com/DevZ72/task_manger.git](https://github.com/DevZ72/task_manger.git)
