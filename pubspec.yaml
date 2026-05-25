@@ -32,7 +32,23 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^1.0.8
   shared_preferences: ^2.2.2
-  font_awesome_flutter: ^10.7.0  # Add this for better icons
+  font_awesome_flutter: ^10.7.0
+
+  # Week 4: API Integration and Networking
+  http: ^1.2.0
+
+  # Week 5: Firebase Authentication and Database
+  firebase_core: ^3.0.0
+  firebase_auth: ^5.0.0
+  cloud_firestore: ^5.0.0
+
+  # Week 6: State Management with Provider
+  provider: ^6.1.2
+
+  # Bonus Challenge: Push Notifications & Advanced State Management
+  firebase_messaging: ^15.0.0
+  flutter_riverpod: ^2.5.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

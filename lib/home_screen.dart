@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'task_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -9,154 +10,116 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  List<String> _tasks = [];
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _taskController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadTasks();
-  }
-
-  // SAVE DATA: Write to phone memory
-  Future<void> _saveTasks() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList('my_tasks', _tasks);
-  }
-
-  // LOAD DATA: Read from phone memory
-  Future<void> _loadTasks() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _tasks = prefs.getStringList('my_tasks') ?? [];
-    });
-  }
-
-  void _addTask() {
-    if (_controller.text.isNotEmpty) {
-      setState(() {
-        _tasks.add(_controller.text);
-        _controller.clear();
-      });
-      _saveTasks();
-    }
+  void _showAddTaskDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text("Add New Task", style: TextStyle(fontWeight: FontWeight.bold)),
+        content: TextField(
+          controller: _taskController,
+          decoration: const InputDecoration(hintText: "Enter task title...", border: UnderlineInputBorder()),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Cancel", style: TextStyle(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Call Provider to add item globally
+              Provider.of<TaskProvider>(context, listen: false).addTask(_taskController.text);
+              _taskController.clear();
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1A237E)),
+            child: const Text("Add", style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    // Week 6 Task 2: Listen to changes from our TaskProvider state container
+    final taskProvider = Provider.of<TaskProvider>(context);
+    final tasks = taskProvider.tasks;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7F9), // Sleek light background
-      body: Column(
-        children: [
-          // CUSTOM GRADIENT HEADER (Real Madrid Style)
-          Container(
-            padding: const EdgeInsets.only(top: 60, left: 20, right: 20, bottom: 30),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF1A237E), Color(0xFF3949AB)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(30),
-                bottomRight: Radius.circular(30),
-              ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  "My Planner",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                // Your Favorite Number 7 Badge
-                CircleAvatar(
-                  backgroundColor: Colors.white.withAlpha(51),
-                  child: const Text(
-                    "7",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
+      backgroundColor: const Color(0xFFF5F7F9),
+      body: tasks.isEmpty
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.assignment_turned_in_outlined, size: 70, color: Colors.indigo.withOpacity(0.4)),
+            const SizedBox(height: 15),
+            Text("No tasks added yet!", style: TextStyle(fontSize: 16, color: Colors.grey.shade600, fontWeight: FontWeight.w500)),
+          ],
+        ),
+      )
+          : ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        itemCount: tasks.length,
+        itemBuilder: (context, index) {
+          final task = tasks[index];
 
-          // INPUT SECTION
-          Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withAlpha(13),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
-                  )
-                ],
-              ),
-              child: TextField(
-                controller: _controller,
-                decoration: InputDecoration(
-                  hintText: "What's on the schedule?",
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.add_circle, color: Color(0xFF3949AB), size: 30),
-                    onPressed: _addTask,
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // TASK LIST
-          Expanded(
-            child: _tasks.isEmpty
-                ? const Center(
-              child: Text(
-                "No tasks yet. Take a break!",
-                style: TextStyle(color: Colors.grey),
-              ),
-            )
-                : ListView.builder(
+          // Week 6 Task 3: Basic UI/UX animations using Dismissible container transitions
+          return Dismissible(
+            key: Key(task.id),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              margin: const EdgeInsets.symmetric(vertical: 6),
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: _tasks.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: ListTile(
-                    leading: const Icon(Icons.check_circle_outline, color: Colors.green),
-                    title: Text(
-                      _tasks[index],
-                      style: const TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-                      onPressed: () {
-                        setState(() => _tasks.removeAt(index));
-                        _saveTasks();
-                      },
-                    ),
-                  ),
-                );
-              },
+              alignment: Alignment.centerRight,
+              decoration: BoxDecoration(color: Colors.redAccent, borderRadius: BorderRadius.circular(12)),
+              child: const Icon(Icons.delete, color: Colors.white),
             ),
-          ),
-        ],
+            onDismissed: (direction) {
+              taskProvider.deleteTask(task.id);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('"${task.title}" deleted successfully.')),
+              );
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 0,
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              color: Colors.white,
+              child: ListTile(
+                leading: Checkbox(
+                  value: task.isCompleted,
+                  activeColor: const Color(0xFF3949AB),
+                  onChanged: (bool? value) {
+                    taskProvider.toggleTaskStatus(task.id);
+                  },
+                ),
+                title: Text(
+                  task.title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+                    color: task.isCompleted ? Colors.grey : Colors.black87,
+                  ),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                  onPressed: () => taskProvider.deleteTask(task.id),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddTaskDialog(context),
+        backgroundColor: const Color(0xFF1A237E),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
     );
   }

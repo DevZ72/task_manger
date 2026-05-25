@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
 import 'auth_service.dart';
-import 'signup_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   final AuthService _authService = AuthService();
   bool _isLoading = false;
-  String? _firebaseErrorMessage;
+  String? _serverErrorMessage;
 
-  void _handleLogin() async {
+  void _submitSignup() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
         _isLoading = true;
-        _firebaseErrorMessage = null;
+        _serverErrorMessage = null;
       });
 
-      String? error = await _authService.loginWithEmailAndPassword(
+      String? error = await _authService.registerWithEmailAndPassword(
+        _nameController.text,
         _emailController.text,
         _passwordController.text,
       );
@@ -33,9 +34,11 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         setState(() => _isLoading = false);
         if (error != null) {
-          setState(() => _firebaseErrorMessage = error);
+          setState(() => _serverErrorMessage = error);
+        } else {
+          // Registration automatically triggers state change handled by auth wrapper
+          Navigator.pop(context);
         }
-        // Success is automatically captured by the auth stream inside main.dart
       }
     }
   }
@@ -44,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7F9),
+      appBar: AppBar(title: const Text("Create Account"), backgroundColor: const Color(0xFF1A237E), foregroundColor: Colors.white),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -52,45 +56,42 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.lock_person, size: 80, color: Color(0xFF1A237E)),
-                const SizedBox(height: 15),
-                const Text("Welcome Back", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF1A237E))),
+                const Text("Join Us", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF1A237E))),
                 const SizedBox(height: 25),
-                if (_firebaseErrorMessage != null) ...[
-                  Text(_firebaseErrorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+                if (_serverErrorMessage != null) ...[
+                  Text(_serverErrorMessage!, style: const TextStyle(color: Colors.red, fontWeight: FontWeight.w500)),
                   const SizedBox(height: 15),
                 ],
                 TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(labelText: "Full Name", border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                  validator: (val) => val == null || val.isEmpty ? "Please enter your name" : null,
+                ),
+                const SizedBox(height: 15),
+                TextFormField(
                   controller: _emailController,
-                  decoration: InputDecoration(labelText: "Email", border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-                  validator: (val) => val != null && val.contains('@') ? null : "Please enter a valid email",
+                  decoration: InputDecoration(labelText: "Email Address", border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+                  validator: (val) => val != null && val.contains('@') ? null : "Enter a valid email",
                 ),
                 const SizedBox(height: 15),
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(labelText: "Password", border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
-                  validator: (val) => val != null && val.isNotEmpty ? null : "Please enter your password",
+                  validator: (val) => val != null && val.length >= 6 ? null : "Password must be at least 6 characters",
                 ),
                 const SizedBox(height: 25),
                 _isLoading
                     ? const CircularProgressIndicator()
                     : ElevatedButton(
-                  onPressed: _handleLogin,
+                  onPressed: _submitSignup,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF3949AB),
                     minimumSize: const Size(double.infinity, 50),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text("Log In", style: TextStyle(color: Colors.white, fontSize: 16)),
+                  child: const Text("Sign Up", style: TextStyle(color: Colors.white, fontSize: 16)),
                 ),
-                const SizedBox(height: 15),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const SignupScreen()));
-                  },
-                  child: const Text("Don't have an account? Sign Up Here", style: TextStyle(color: Color(0xFF1A237E))),
-                )
               ],
             ),
           ),
